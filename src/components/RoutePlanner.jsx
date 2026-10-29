@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { itineraries } from '../data'
-import { Arrow } from './Icons'
 
 const routeCovers = {
   lisbon: {
@@ -19,36 +18,8 @@ const routeCovers = {
 
 export default function RoutePlanner() {
   const [duration, setDuration] = useState(7)
-  const [downloadStatus, setDownloadStatus] = useState('')
   const itinerary = itineraries[duration]
   const cover = duration === 3 ? routeCovers.lisbon : routeCovers.porto
-
-  function downloadRoute() {
-    const text = [
-      `Portugal — ${duration} days`,
-      itinerary.title,
-      '',
-      ...itinerary.stops.map(
-        (stop) => `${stop.days} — ${stop.name}\n${stop.text}\n`,
-      ),
-      itinerary.note,
-      '',
-      'Check transport connections and opening hours before your trip.',
-      'Tourist information: https://www.visitportugal.com/en',
-      'Trains: https://www.cp.pt',
-    ].join('\n')
-    const url = URL.createObjectURL(
-      new Blob(['\uFEFF' + text], { type: 'text/plain;charset=utf-8' }),
-    )
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `portugal-${duration}-days.txt`
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    setTimeout(() => URL.revokeObjectURL(url), 1000)
-    setDownloadStatus('Your itinerary is ready to download')
-  }
 
   return (
     <section
@@ -88,10 +59,7 @@ export default function RoutePlanner() {
                 type="button"
                 key={days}
                 aria-pressed={duration === days}
-                onClick={() => {
-                  setDuration(days)
-                  setDownloadStatus('')
-                }}
+                onClick={() => setDuration(days)}
               >
                 {days} days
               </button>
@@ -113,16 +81,6 @@ export default function RoutePlanner() {
             </ol>
             <p className="route-note">{itinerary.note}</p>
           </div>
-          <button
-            type="button"
-            className="button button-primary download-route"
-            onClick={downloadRoute}
-          >
-            Download itinerary <Arrow direction="down" />
-          </button>
-          <span className="download-status" role="status">
-            {downloadStatus || 'A text file you can open on your phone'}
-          </span>
         </div>
       </div>
     </section>
